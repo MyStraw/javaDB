@@ -6,10 +6,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+// Statement : 완결된 Query 문장을 실행할 때
+// PreparedStatement : 변수로 값을 추가할 수 없는 Query문을 실행할때
+
+// select -> executeQuery : PreparedStatment, Statement
+// insert/delete/update ==> executeUpdate : PreparedStatment, Statement
+
 public class sqlconnection2 {
 
 	Connection con = null;
-	Statement st = null;
 
 	private void deleteDept(String dno) {
 
@@ -27,21 +32,29 @@ public class sqlconnection2 {
 		System.out.println("데이터베이스가 삭제되었습니다.");
 	}
 
+	// Statement, executeUpdate 사용
+
 	private void insertDeptStatement(String dno, String dname, int budget) {
 
-		String sql = String.format("insert into dept (dno, dname, budget) values('%s','%s','%d')", dno, dname, budget);
-		//이건 prepared 안써도 돼. 밑에 봐봐. 안썼당. 
+//		String sql = String.format("insert into dept (dno, dname, budget) values('%s','%s','%d')", dno, dname, budget);
+		// 이건 prepared 안써도 돼. 밑에 봐봐. 안썼당.
 
 		try {
 			Statement st = con.createStatement();
-			st.executeUpdate(sql);
 
+//			st.executeUpdate(sql); 이거 쓰려면 위에 String sql = String.format("insert~적기)
+			int cnt = st.executeUpdate(
+					String.format("insert into dept (dno, dname, budget) values('%s','%s','%d')", dno, dname, budget));
+//	int cnt = con.createStatment().executeUpdate(String.format("insert into dept (dno, dname, budget) values('%s','%s','%d')", dno, dname, budget));
+			System.out.println("데이터가" + cnt + "개가 입력되었습니다.");
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 
 		System.out.println("데이터베이스가 입력되었습니다.");
 	}
+
+	// PreparedStatment, executUpdate를 사용
 
 	private void insertDept(String dno, String dname, int budget) {
 
@@ -86,17 +99,95 @@ public class sqlconnection2 {
 		}
 	}
 
+	// -------------------------------------------------------------------------------------------------------------
+	private void updateDeptPrepared(String dno, String dname, int budget) {
+
+		try {
+			PreparedStatement ps = con.prepareStatement("update dept set dname =?, budget = ? where dno=?");
+			ps.setString(1, dname);
+			ps.setInt(2, budget);
+			ps.setString(3, dno);
+			int cnt = ps.executeUpdate();
+
+			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+	}
+
+	private void updateDeptStatement(String dno, String dname, int budget) {
+
+		try {
+			Statement st = con.createStatement();
+
+			int cnt = st.executeUpdate(
+					String.format("update dept set dname = '%s', budget = %d where dno= '%s'", dname, budget, dno));
+
+			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// -------------------------------------------------------------------------------------------------------------
+	private void deleteDepttriggerPrepared(int from, int to) {
+		String sql = "delete from depttrigger where ? <= id and id <= ?";
+
+		try {
+			PreparedStatement ps = con.prepareStatement(sql);
+			ps.setInt(1, from);
+			ps.setInt(2, to);
+
+			int cnt = ps.executeUpdate();
+
+			System.out.println("데이터가" + cnt + "개가 삭제되었습니다.");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	private void deleteDepttriggerStatement(int from, int to) {
+		try {
+			Statement st = con.createStatement();
+
+			int cnt = st.executeUpdate(String.format("delete from depttrigger where %d <= id and id <= %d", from, to));
+
+			System.out.println("데이터가" + cnt + "개가 삭제되었습니다.");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	// -------------------------------------------------------------------------------------------------------------
 	public static void main(String[] args) {
 
 		sqlconnection2 tt = new sqlconnection2();
 		if (tt.connectDB()) {
-			tt.insertDept("d30", "dname30", 123123123);
-			tt.insertDept("d31", "dname31", 123321321);
-			tt.deleteDept("d21");
-			tt.deleteDept("d22");
-			tt.insertDeptStatement("d40", "dname40", 44444444);
+//			tt.insertDept("d30", "dname30", 123123123);
+//			tt.insertDept("d31", "dname31", 123321321);
+//			tt.deleteDept();
+//			tt.deleteDepttriggerStatement(6, 19);
+//			tt.deleteDepttriggerPrepared(21, 30);
+//			tt.updateDeptPrepared("d1", "dname1", 1000);
+			tt.updateDeptStatement("d1", "dname", 2000);
+//			
+//			tt.insertDeptStatement("d40", "dname40", 44444444);
 			tt.closeDB();
 		}
 	}
 
 }
+
+// insert into ~ () values (%s, %s,~~ ) 문자인 경우에 이러면 안돼. 문자형 데이터니까 '%s'로 해줘야 한다.
+//					values ('?') setString은 알아서 해쥼
+
+// "insert into ~ ) values ("%s",") 이렇게 해버리면 맨앞 쌍따옴표랑 %앞 "까지 한 문장으로 인식해
+// 문장에 "를 굳이 쓰고싶다면.  \" 이렇게 하면 "를 무시하고 하라는 말로 쓸수있다. 
