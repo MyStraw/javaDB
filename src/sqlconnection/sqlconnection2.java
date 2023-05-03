@@ -100,40 +100,6 @@ public class sqlconnection2 {
 	}
 
 	// -------------------------------------------------------------------------------------------------------------
-	private void updateDeptPrepared(String dno, String dname, int budget) {
-
-		try {
-			PreparedStatement ps = con.prepareStatement("update dept set dname =?, budget = ? where dno=?");
-			ps.setString(1, dname);
-			ps.setInt(2, budget);
-			ps.setString(3, dno);
-			int cnt = ps.executeUpdate();
-
-			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-	}
-
-	private void updateDeptStatement(String dno, String dname, int budget) {
-
-		try {
-			Statement st = con.createStatement();
-
-			int cnt = st.executeUpdate(
-					String.format("update dept set dname = '%s', budget = %d where dno= '%s'", dname, budget, dno));
-
-			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
-
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-	}
-
-	// -------------------------------------------------------------------------------------------------------------
 	private void deleteDepttriggerPrepared(int from, int to) {
 		String sql = "delete from depttrigger where ? <= id and id <= ?";
 
@@ -167,6 +133,46 @@ public class sqlconnection2 {
 	}
 
 	// -------------------------------------------------------------------------------------------------------------
+
+	private void updateDeptPrepared(String dno, String dname, int budget) {
+
+		try {
+			PreparedStatement ps = con.prepareStatement("update dept set dname =?, budget = ? where dno=?");
+			ps.setString(1, dname);
+			ps.setInt(2, budget);
+			ps.setString(3, dno);
+			int cnt = ps.executeUpdate();
+
+			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
+
+			int a = 10 / 0; // 에러 예외 한번 만들어보자. 0으로 나누는거 자체가 에러.
+
+		} catch (SQLException e) {
+			System.out.println("SQLException");
+			e.printStackTrace();
+		} catch (Exception e) {
+			System.out.println("Exception"); // sql 에서 에러가 난 범위 벗어나면 이거에서 걸리도록. 돌려봐. 이게 콘솔에 뜬다
+			e.printStackTrace(); // 빨간글자 에러
+		}
+
+	}
+
+	private void updateDeptStatement(String dno, String dname, int budget) {
+
+		try {
+			Statement st = con.createStatement();
+
+			int cnt = st.executeUpdate(
+					String.format("update dept set dname = '%s', budget = %d where dno= '%s'", dname, budget, dno));
+
+			System.out.println("데이터가" + cnt + "개가 수정되었습니다.");
+
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	// -------------------------------------------------------------------------------------------------------------
 	public static void main(String[] args) {
 
 		sqlconnection2 tt = new sqlconnection2();
@@ -176,9 +182,9 @@ public class sqlconnection2 {
 //			tt.deleteDept();
 //			tt.deleteDepttriggerStatement(6, 19);
 //			tt.deleteDepttriggerPrepared(21, 30);
-//			tt.updateDeptPrepared("d1", "dname1", 1000);
-			tt.updateDeptStatement("d1", "dname", 2000);
-//			
+			tt.updateDeptPrepared("d1", "dname1", 1000);
+//			tt.updateDeptStatement("d1", "dname", 2000);
+//	
 //			tt.insertDeptStatement("d40", "dname40", 44444444);
 			tt.closeDB();
 		}
