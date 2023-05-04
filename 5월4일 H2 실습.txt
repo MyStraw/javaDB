@@ -1,0 +1,20 @@
+create table contact(
+`CID` int auto_increment not null,
+`name` varchar(20) not null, 
+`category` enum('friends','company','family','etc') not null,
+`address` varchar(40) default '',
+`office` varchar(40)  default '',
+`birthday` date default '',
+  PRIMARY KEY (`CID`)
+)
+
+
+
+-------------------------
+create table phone(
+`CID` int auto_increment not null,
+`Seq` int not null, 
+`number` varchar(20) not null,
+`type` enum('mobile','home','office','fax', 'etc'),
+ PRIMARY KEY (`CID`, `Seq`)
+)
