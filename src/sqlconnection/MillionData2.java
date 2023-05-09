@@ -84,7 +84,7 @@ public class MillionData2 {
 		if (tt.connectDB()) {
 //				tt.insertContact(CID, name, ct, address, office, birthday);
 			// tt.deleteContact(1);
-			tt.insertContactwithStatement();
+//			tt.insertContactwithStatement();
 		}
 
 		tt.closeDB();
