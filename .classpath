@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="sqlconnection/DB과제_제출.java" kind="src" output="target/classes" path="src">
+	<classpathentry excluding="sqlconnection/DB과제_제출.java|sqlconnection/현진테이블.java" kind="src" output="target/classes" path="src">
 		<attributes>
 			<attribute name="optional" value="true"/>
 			<attribute name="maven.pomderived" value="true"/>
